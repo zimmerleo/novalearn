@@ -1,0 +1,30 @@
+POST localhost:8080/api/v1/atoms
+Content-Type: application/json
+
+{
+    "atomicNumber": 6,
+    "name": "Carbon",
+    "symbol": "C",
+    "atomicMass": 12.011,
+    "aggregateState": {
+      "name": "Solid"
+    },
+    "appearance": {
+      "name": "Natural"
+    },
+    "group": {
+      "name": "Tetrels",
+      "mainGroup": true
+    },
+    "period": 2
+  }
+###
+POST localhost:8080/api/v1/molecules
+Content-Type: application/json
+
+{
+  "name": "Water",
+  "atoms": {
+
+  }
+}
