@@ -5,7 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AggregateStateDTO {
-    private long id;
-    private String name;
+public class MoleculeAtomContainmentDTO {
+
+    private AtomDTO atom;
+    private MoleculeDTO molecule;
+    private int amount;
 }

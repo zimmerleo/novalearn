@@ -3,6 +3,7 @@ package de.seniorenheim.nlbackend.chemistry.services;
 import de.seniorenheim.nlbackend.chemistry.database.dtos.AppearanceDTO;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Appearance;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.AppearanceRepo;
+import de.seniorenheim.nlbackend.utils.DTOConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -12,29 +13,45 @@ import java.util.List;
 public class AppearanceService {
 
     private final AppearanceRepo appearanceRepo;
+    private final DTOConverter dtoConverter;
 
-    public AppearanceService(AppearanceRepo appearanceRepo) {
+    public AppearanceService(AppearanceRepo appearanceRepo, DTOConverter dtoConverter) {
         this.appearanceRepo = appearanceRepo;
+        this.dtoConverter = dtoConverter;
     }
 
     @Transactional
-    public Appearance save(AppearanceDTO appearanceDTO) {
-        for (Appearance appearance : findAll()) {
-            if (appearance.getName().equalsIgnoreCase(appearanceDTO.getName())) {
-                return appearance;
-            }
+    public AppearanceDTO save(AppearanceDTO appearanceDTO) {
+        Appearance appearance = Appearance.builder()
+                .name(appearanceDTO.getName())
+                .build();
+        return dtoConverter.convertToDTO(appearanceRepo.save(appearance));
+    }
+
+    @Transactional
+    public AppearanceDTO update(long id, AppearanceDTO appearanceDTO) {
+        Appearance appearance = appearanceRepo.findById(id);
+        if (appearance == null) {
+            return null;
         }
-        return appearanceRepo.save(
-                Appearance.builder()
-                        .name(appearanceDTO.getName())
-                        .build());
+        appearance.setName(appearanceDTO.getName());
+        return dtoConverter.convertToDTO(appearanceRepo.save(appearance));
     }
 
-    public List<Appearance> findAll() {
-        return appearanceRepo.findAll();
+    @Transactional
+    public void delete(long id) {
+        appearanceRepo.deleteById(id);
     }
 
-    public Appearance findById(Long id) {
-        return appearanceRepo.findById(id).orElse(null);
+    public List<AppearanceDTO> findAll() {
+        return dtoConverter.convertList(appearanceRepo.findAll(), dtoConverter::convertToDTO);
+    }
+
+    public AppearanceDTO findById(long id) {
+        return dtoConverter.convertToDTO(appearanceRepo.findById(id));
+    }
+
+    public AppearanceDTO findByName(String name) {
+        return dtoConverter.convertToDTO(appearanceRepo.findByName(name));
     }
 }

@@ -1,15 +1,14 @@
 package de.seniorenheim.nlbackend.chemistry.database.dtos;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Map;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class MoleculeDTO {
+    private long id;
     private String name;
     private String chemicalFormula;
     private double molecularMass;

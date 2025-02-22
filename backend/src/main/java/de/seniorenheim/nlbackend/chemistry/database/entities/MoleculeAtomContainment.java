@@ -15,16 +15,15 @@ import lombok.NoArgsConstructor;
 public class MoleculeAtomContainment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
     @ManyToOne
-    @JoinColumn
     private Molecule molecule;
 
     @ManyToOne
-    @JoinColumn
     private Atom atom;
 
     private int amount;
 }
+

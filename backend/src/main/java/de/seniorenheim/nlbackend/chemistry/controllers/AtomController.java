@@ -1,9 +1,9 @@
 package de.seniorenheim.nlbackend.chemistry.controllers;
 
-import de.seniorenheim.nlbackend.chemistry.database.dtos.*;
+import de.seniorenheim.nlbackend.chemistry.database.dtos.AtomDTO;
+import de.seniorenheim.nlbackend.chemistry.database.dtos.MoleculeDTO;
 import de.seniorenheim.nlbackend.chemistry.services.AtomService;
 import de.seniorenheim.nlbackend.chemistry.services.MoleculeAtomContainmentService;
-import de.seniorenheim.nlbackend.utils.DTOConverter;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,57 +16,64 @@ public class AtomController {
 
     private final AtomService atomService;
     private final MoleculeAtomContainmentService moleculeAtomContainmentService;
-    private final DTOConverter dtoConverter;
 
-    public AtomController(AtomService atomService, MoleculeAtomContainmentService moleculeAtomContainmentService, DTOConverter dtoConverter) {
+    public AtomController(AtomService atomService, MoleculeAtomContainmentService moleculeAtomContainmentService) {
         this.atomService = atomService;
         this.moleculeAtomContainmentService = moleculeAtomContainmentService;
-        this.dtoConverter = dtoConverter;
     }
 
     @GetMapping
     public List<AtomDTO> getAtoms() {
-        return dtoConverter.convertList(atomService.findAll(), dtoConverter::convertToDTO);
+        return atomService.findAll();
     }
 
     @PostMapping
     public AtomDTO saveAtom(@RequestBody AtomDTO atomDTO) {
-        return dtoConverter.convertToDTO(atomService.save(atomDTO));
+        return atomService.save(atomDTO);
     }
 
-    @GetMapping("/atomicNumber/{atomicNumber}")
-    public AtomDTO getAtomByAtomicNumber(@PathVariable long atomicNumber) {
-        return dtoConverter.convertToDTO(atomService.findByAtomicNumber(atomicNumber));
+    @PutMapping("/id/{id}")
+    public AtomDTO update(@PathVariable long id, @RequestBody AtomDTO atomDTO) {
+        return atomService.update(id, atomDTO);
+    }
+
+    @DeleteMapping("/id/{id}")
+    public void delete(@PathVariable long id) {
+        atomService.delete(id);
+    }
+
+    @GetMapping("/id/{id}")
+    public AtomDTO getAtomById(@PathVariable long id) {
+        return atomService.findById(id);
     }
 
     @GetMapping("/symbol/{symbol}")
     public AtomDTO getAtomBySymbol(@PathVariable String symbol) {
-        return dtoConverter.convertToDTO(atomService.findBySymbol(symbol));
+        return atomService.findBySymbol(symbol);
     }
 
-    @GetMapping("/atomicNumber/{atomicNumber}/shells")
-    public List<Integer> getAtomShellsByAtomicNumber(@PathVariable long atomicNumber) {
-        return atomService.getAtomShells(atomicNumber);
+    @GetMapping("/id/{id}/shells")
+    public List<Long> getAtomShellsById(@PathVariable long id) {
+        return atomService.getAtomShells(id);
     }
 
     @GetMapping("/symbol/{symbol}/shells")
-    public List<Integer> getAtomShellsBySymbol(@PathVariable String symbol) {
+    public List<Long> getAtomShellsBySymbol(@PathVariable String symbol) {
         return atomService.getAtomShells(symbol);
     }
 
-    @GetMapping("/atomicNumber/{atomicNumber}/valenceShellElectronCount")
-    public int getValenceShellElectronCount(@PathVariable long atomicNumber) {
-        return atomService.getValenceShellElectronCount(atomicNumber);
+    @GetMapping("/id/{id}/valenceShellElectronCount")
+    public long getValenceShellElectronCount(@PathVariable long id) {
+        return atomService.getValenceShellElectronCount(id);
     }
 
     @GetMapping("/symbol/{symbol}/valenceShellElectronCount")
-    public int getValenceShellElectronCount(@PathVariable String symbol) {
+    public long getValenceShellElectronCount(@PathVariable String symbol) {
         return atomService.getValenceShellElectronCount(symbol);
     }
 
-    @GetMapping("/atomicNumber/{atomicNumber}/molecules")
-    public Map<MoleculeDTO, Integer> getMoleculesByAtomId(@PathVariable long atomicNumber) {
-        //TODO Map lässt sich schlecht in Json darstellen, vllt wechseln - gilt ebenfalls für den MoleculeController
-        return dtoConverter.convertMap(moleculeAtomContainmentService.findByAtom(atomService.findByAtomicNumber(atomicNumber)), dtoConverter::convertToDTO);
+    @GetMapping("/id/{id}/molecules")
+    public Map<String, Integer> getMoleculesByAtomId(@PathVariable long id) {
+        return moleculeAtomContainmentService.findByAtomOrderByMoleculeASC(id);
     }
 }

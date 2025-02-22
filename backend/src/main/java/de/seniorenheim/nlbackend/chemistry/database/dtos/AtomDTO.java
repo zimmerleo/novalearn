@@ -1,15 +1,13 @@
 package de.seniorenheim.nlbackend.chemistry.database.dtos;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class AtomDTO {
 
-    private long atomicNumber;
+    private long id;
     private String name;
     private String symbol;
     private double atomicMass;

@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AggregateStateRepo extends JpaRepository<AggregateState, Long> {
+    AggregateState findById(long id);
+    AggregateState findByName(String name);
 }

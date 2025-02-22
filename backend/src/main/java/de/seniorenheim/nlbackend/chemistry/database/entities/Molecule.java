@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "chemistry_molecules")
 @Builder
@@ -15,9 +17,13 @@ import lombok.NoArgsConstructor;
 public class Molecule {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
+
     private String name;
     private String chemicalFormula;
     private double molecularMass;
+
+    @OneToMany(mappedBy = "molecule", cascade = CascadeType.ALL)
+    private List<MoleculeAtomContainment> moleculeAtomContainments;
 }

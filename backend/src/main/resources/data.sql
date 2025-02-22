@@ -26,15 +26,23 @@ INSERT INTO chemistry_groups (id, name, main_group) VALUES (17, 'Nickel group', 
 INSERT INTO chemistry_groups (id, name, main_group) VALUES (18, 'Copper group', false);
 INSERT INTO chemistry_groups (id, name, main_group) VALUES (19, 'Zinc group', false);
 
-INSERT INTO chemistry_atoms (atomic_number, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
 VALUES (1, 1.0079, 'Hydrogen', 'H', 3, 1, 1, 1);
-INSERT INTO chemistry_atoms (atomic_number, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
-VALUES (8, 15.999, 'Oxygen', 'O', 3, 1, 6, 2);
-
-INSERT INTO chemistry_molecules (id, molecular_mass, chemical_formula, name)
-VALUES (1, 187, 'H2O', 'Water');
-
-INSERT INTO chemistry_molecule_atom_containment (amount, atom_atomic_number, molecule_id)
-VALUES (2, 1, 1);
-INSERT INTO chemistry_molecule_atom_containment (amount, atom_atomic_number, molecule_id)
-VALUES (1, 8, 1);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (2, 4.0026, 'Helium', 'He', 3, 1, 8, 1);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (3, 6.941, 'Lithium', 'Li', 3, 1, 1, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (4, 9.0122, 'Beryllium', 'Be', 3, 1, 2, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (5, 10.811, 'Boron', 'B', 3, 1, 3, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (6, 12.0107, 'Carbon', 'C', 3, 1, 4, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (7, 14.0067, 'Nitrogen', 'N', 3, 1, 5, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (8, 15.9994, 'Oxygen', 'O', 3, 1, 6, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (9, 18.9984, 'Fluorine', 'F', 3, 1, 7, 2);
+INSERT INTO chemistry_atoms (id, atomic_mass, name, symbol, aggregate_state_id, appearance_id, group_id, period)
+VALUES (10, 20.1797, 'Neon', 'Ne', 3, 1, 8, 2);

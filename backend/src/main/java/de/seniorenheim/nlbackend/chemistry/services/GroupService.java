@@ -3,6 +3,7 @@ package de.seniorenheim.nlbackend.chemistry.services;
 import de.seniorenheim.nlbackend.chemistry.database.dtos.GroupDTO;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Group;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.GroupRepo;
+import de.seniorenheim.nlbackend.utils.DTOConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -12,30 +13,47 @@ import java.util.List;
 public class GroupService {
 
     private final GroupRepo groupRepo;
+    private final DTOConverter dtoConverter;
 
-    public GroupService(GroupRepo groupRepo) {
+    public GroupService(GroupRepo groupRepo, DTOConverter dtoConverter) {
         this.groupRepo = groupRepo;
+        this.dtoConverter = dtoConverter;
     }
 
     @Transactional
-    public Group save(GroupDTO groupDTO) {
-        for (Group group : findAll()) {
-            if (group.getName().equalsIgnoreCase(groupDTO.getName())) {
-                return group;
-            }
+    public GroupDTO save(GroupDTO groupDTO) {
+        Group group = Group.builder()
+                .name(groupDTO.getName())
+                .mainGroup(groupDTO.isMainGroup())
+                .build();
+        return dtoConverter.convertToDTO(groupRepo.save(group));
+    }
+
+    @Transactional
+    public GroupDTO update(long id, GroupDTO groupDTO) {
+        Group group = groupRepo.findById(id);
+        if (group == null) {
+            return null;
         }
-        return groupRepo.save(
-                Group.builder()
-                        .name(groupDTO.getName())
-                        .mainGroup(groupDTO.isMainGroup())
-                        .build());
+        group.setName(groupDTO.getName());
+        group.setMainGroup(groupDTO.isMainGroup());
+        return dtoConverter.convertToDTO(groupRepo.save(group));
     }
 
-    public List<Group> findAll() {
-        return groupRepo.findAll();
+    @Transactional
+    public void delete(long id) {
+        groupRepo.deleteById(id);
     }
 
-    public Group findById(Long id) {
-        return groupRepo.findById(id).orElse(null);
+    public List<GroupDTO> findAll() {
+        return dtoConverter.convertList(groupRepo.findAll(), dtoConverter::convertToDTO);
+    }
+
+    public GroupDTO findById(long id) {
+        return dtoConverter.convertToDTO(groupRepo.findById(id));
+    }
+
+    public GroupDTO findByName(String name) {
+        return dtoConverter.convertToDTO(groupRepo.findByName(name));
     }
 }

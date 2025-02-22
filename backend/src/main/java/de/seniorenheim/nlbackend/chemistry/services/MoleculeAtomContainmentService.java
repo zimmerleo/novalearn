@@ -1,9 +1,12 @@
 package de.seniorenheim.nlbackend.chemistry.services;
 
-import de.seniorenheim.nlbackend.chemistry.database.entities.Atom;
+import de.seniorenheim.nlbackend.chemistry.database.dtos.MoleculeAtomContainmentDTO;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Molecule;
 import de.seniorenheim.nlbackend.chemistry.database.entities.MoleculeAtomContainment;
+import de.seniorenheim.nlbackend.chemistry.database.repositories.AtomRepo;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.MoleculeAtomContainmentRepo;
+import de.seniorenheim.nlbackend.chemistry.database.repositories.MoleculeRepo;
+import de.seniorenheim.nlbackend.utils.DTOConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -15,47 +18,70 @@ import java.util.Map;
 public class MoleculeAtomContainmentService {
 
     private final MoleculeAtomContainmentRepo moleculeAtomContainmentRepo;
+    private final DTOConverter dtoConverter;
+    private final MoleculeRepo moleculeRepo;
+    private final AtomRepo atomRepo;
 
-    public MoleculeAtomContainmentService(MoleculeAtomContainmentRepo moleculeAtomContainmentRepo) {
+    public MoleculeAtomContainmentService(MoleculeAtomContainmentRepo moleculeAtomContainmentRepo, DTOConverter dtoConverter, MoleculeRepo moleculeRepo, AtomRepo atomRepo, AtomRepo atomRepo1) {
         this.moleculeAtomContainmentRepo = moleculeAtomContainmentRepo;
+        this.dtoConverter = dtoConverter;
+        this.moleculeRepo = moleculeRepo;
+        this.atomRepo = atomRepo;
     }
 
     @Transactional
-    public MoleculeAtomContainment save(MoleculeAtomContainment moleculeAtomContainment) {
+    public MoleculeAtomContainmentDTO save(MoleculeAtomContainmentDTO moleculeAtomContainmentDTO) {
+        MoleculeAtomContainment moleculeAtomContainment = MoleculeAtomContainment.builder()
+                .amount(moleculeAtomContainmentDTO.getAmount())
+                .build();
 
-        for (MoleculeAtomContainment containment : findAll()) {
-            if (containment.getMolecule().getName().equalsIgnoreCase(moleculeAtomContainment.getMolecule().getName())
-                && containment.getAtom().getName().equalsIgnoreCase(moleculeAtomContainment.getAtom().getName())) {
-                return containment;
-            }
+        return dtoConverter.convertToDTO(moleculeAtomContainmentRepo.save(moleculeAtomContainment));
+    }
+
+    @Transactional
+    public MoleculeAtomContainmentDTO update(long id, int amount) {
+        MoleculeAtomContainment moleculeAtomContainment = moleculeAtomContainmentRepo.findById(id);
+        if (moleculeAtomContainment == null) {
+            return null;
         }
-        return moleculeAtomContainmentRepo.save(moleculeAtomContainment);
+        moleculeAtomContainment.setAmount(amount);
+        return dtoConverter.convertToDTO(moleculeAtomContainmentRepo.save(moleculeAtomContainment));
     }
 
-    public List<MoleculeAtomContainment> findAll() {
-        return moleculeAtomContainmentRepo.findAll();
+    @Transactional
+    public void delete(long id) {
+        moleculeAtomContainmentRepo.delete(moleculeAtomContainmentRepo.findById(id));
     }
 
-    public Map<Molecule, Integer> findByAtom(Atom atom) {
-        Map<Molecule, Integer> map = new HashMap<>();
-        for (MoleculeAtomContainment moleculeAtomContainment : moleculeAtomContainmentRepo.findByAtom(atom)) {
-            map.put(moleculeAtomContainment.getMolecule(), moleculeAtomContainment.getAmount());
+    public List<MoleculeAtomContainmentDTO> findAll() {
+        return dtoConverter.convertList(moleculeAtomContainmentRepo.findAll(), dtoConverter::convertToDTO);
+    }
+
+    public MoleculeAtomContainmentDTO findById(long id) {
+        return dtoConverter.convertToDTO(moleculeAtomContainmentRepo.findById(id));
+    }
+
+    public Map<String, Integer> findByAtomOrderByMoleculeASC(long atomId) {
+        Map<String, Integer> map = new HashMap<>();
+        for (MoleculeAtomContainment moleculeAtomContainment : moleculeAtomContainmentRepo.findByAtomOrderByMoleculeASC(atomRepo.findById(atomId))) {
+            map.put(moleculeAtomContainment.getMolecule().getChemicalFormula(), moleculeAtomContainment.getAmount());
         }
         return map;
     }
 
-    public Map<Atom, Integer> findByMolecule(Molecule molecule) {
-        Map<Atom, Integer> map = new HashMap<>();
-        for (MoleculeAtomContainment moleculeAtomContainment : moleculeAtomContainmentRepo.findByMolecule(molecule)) {
-            map.put(moleculeAtomContainment.getAtom(), moleculeAtomContainment.getAmount());
+    public Map<String, Integer> findByMoleculeIdOrderedByAtomSymbolASC(long moleculeId) {
+        Map<String, Integer> map = new HashMap<>();
+        List<MoleculeAtomContainment> containments = moleculeAtomContainmentRepo.findByMoleculeOrderedByAtomSymbolASC(moleculeRepo.findById(moleculeId));
+        for (MoleculeAtomContainment moleculeAtomContainment : containments) {
+            map.put(moleculeAtomContainment.getAtom().getSymbol(), moleculeAtomContainment.getAmount());
         }
         return map;
     }
 
-    public Map<Atom, Integer> findByMoleculeOrderedByAtomSymbolASC(Molecule molecule) {
-        Map<Atom, Integer> map = new HashMap<>();
+    public Map<String, Integer> findByMoleculeOrderedByAtomSymbolASC(Molecule molecule) {
+        Map<String, Integer> map = new HashMap<>();
         for (MoleculeAtomContainment moleculeAtomContainment : moleculeAtomContainmentRepo.findByMoleculeOrderedByAtomSymbolASC(molecule)) {
-            map.put(moleculeAtomContainment.getAtom(), moleculeAtomContainment.getAmount());
+            map.put(moleculeAtomContainment.getAtom().getSymbol(), moleculeAtomContainment.getAmount());
         }
         return map;
     }

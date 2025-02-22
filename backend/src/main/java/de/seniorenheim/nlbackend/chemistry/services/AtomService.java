@@ -1,9 +1,15 @@
 package de.seniorenheim.nlbackend.chemistry.services;
 
 import de.seniorenheim.nlbackend.chemistry.database.dtos.AtomDTO;
+import de.seniorenheim.nlbackend.chemistry.database.entities.AggregateState;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Appearance;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Atom;
+import de.seniorenheim.nlbackend.chemistry.database.entities.Group;
+import de.seniorenheim.nlbackend.chemistry.database.repositories.AggregateStateRepo;
+import de.seniorenheim.nlbackend.chemistry.database.repositories.AppearanceRepo;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.AtomRepo;
+import de.seniorenheim.nlbackend.chemistry.database.repositories.GroupRepo;
+import de.seniorenheim.nlbackend.utils.DTOConverter;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -14,74 +20,107 @@ import java.util.List;
 public class AtomService {
 
     private final AtomRepo atomRepo;
-    private final AggregateStateService aggregateStateService;
-    private final AppearanceService appearanceService;
-    private final GroupService groupService;
+    private final AggregateStateRepo aggregateStateRepo;
+    private final AppearanceRepo appearanceRepo;
+    private final GroupRepo groupRepo;
+    private final DTOConverter dtoConverter;
 
-    public AtomService(AtomRepo atomRepo, AggregateStateService aggregateStateService, AppearanceService appearanceService, GroupService groupService) {
+    public AtomService(AtomRepo atomRepo, AggregateStateRepo aggregateStateRepo, AppearanceRepo appearanceRepo, GroupRepo groupRepo, DTOConverter dtoConverter) {
         this.atomRepo = atomRepo;
-        this.aggregateStateService = aggregateStateService;
-        this.appearanceService = appearanceService;
-        this.groupService = groupService;
+        this.dtoConverter = dtoConverter;
+        this.aggregateStateRepo = aggregateStateRepo;
+        this.appearanceRepo = appearanceRepo;
+        this.groupRepo = groupRepo;
     }
 
     @Transactional
-    public Atom save(AtomDTO atomDTO) {
-
-        for (Atom atom : findAll()) {
-            if (atom.getSymbol().equalsIgnoreCase(atomDTO.getSymbol())) {
-                return atom;
-            }
-        }
-
+    public AtomDTO save(AtomDTO atomDTO) {
         Atom atom = Atom.builder()
-                .atomicNumber(atomDTO.getAtomicNumber())
+                .id(atomDTO.getId())
                 .name(atomDTO.getName())
                 .symbol(atomDTO.getSymbol())
                 .atomicMass(atomDTO.getAtomicMass())
-                .aggregateState(aggregateStateService.save(atomDTO.getAggregateState()))
-                .appearance(appearanceService.save(atomDTO.getAppearance()))
-                .group(groupService.save(atomDTO.getGroup()))
+                .aggregateState(aggregateStateRepo.findById(atomDTO.getAggregateState().getId()))
+                .appearance(appearanceRepo.findById(atomDTO.getAppearance().getId()))
+                .group(groupRepo.findById(atomDTO.getGroup().getId()))
+                .period(atomDTO.getPeriod())
                 .build();
 
-        return atomRepo.save(atom);
+        return dtoConverter.convertToDTO(atomRepo.save(atom));
     }
 
-    public List<Atom> findAll() {
-        return atomRepo.findAll();
+    @Transactional
+    public AtomDTO update(long atomicNumber, AtomDTO atomDTO) {
+        Atom atom = atomRepo.findById(atomicNumber);
+        if (atom == null) {
+            return null;
+        }
+        atom.setName(atomDTO.getName());
+        atom.setSymbol(atomDTO.getSymbol());
+        atom.setAggregateState(aggregateStateRepo.findById(atomDTO.getAggregateState().getId()));
+        atom.setAppearance(appearanceRepo.findById(atomDTO.getAppearance().getId()));
+        atom.setGroup(groupRepo.findById(atomDTO.getGroup().getId()));
+        atom.setPeriod(atomDTO.getPeriod());
+
+        return dtoConverter.convertToDTO(atomRepo.save(atom));
     }
 
-    public Atom findByAtomicNumber(Long atomicNumber) {
-        return atomRepo.findById(atomicNumber).orElse(null);
-    }
-
-    public Atom findByName(String name) {
-        return atomRepo.findByName(name);
-    }
-
-    public Atom findBySymbol(String symbol) {
-        return atomRepo.findBySymbol(symbol);
-    }
-
+    @Transactional
     public void delete(long atomicNumber) {
-        atomRepo.delete(findByAtomicNumber(atomicNumber));
+        atomRepo.delete(atomRepo.findById(atomicNumber));
     }
 
-    public List<Integer> getAtomShells(long atomicNumber) {
-        return getAtomShells(findByAtomicNumber(atomicNumber));
+    public List<AtomDTO> findAll() {
+        return dtoConverter.convertList(atomRepo.findAll(), dtoConverter::convertToDTO);
     }
 
-    public List<Integer> getAtomShells(String symbol) {
-        return getAtomShells(findBySymbol(symbol));
+    public AtomDTO findById(Long id) {
+        return dtoConverter.convertToDTO(atomRepo.findById(id).orElse(null));
     }
 
-    private List<Integer> getAtomShells(Atom atom) {
-        int atomicNumber = (int) atom.getAtomicNumber();
-        List<Integer> shells = new ArrayList<>();
+    public AtomDTO findByName(String name) {
+        return dtoConverter.convertToDTO(atomRepo.findByName(name));
+    }
 
-        int n = 1;
+    public AtomDTO findBySymbol(String symbol) {
+        return dtoConverter.convertToDTO(atomRepo.findBySymbol(symbol));
+    }
+
+    public List<AtomDTO> findAllByAggregateState(AggregateState aggregateState) {
+        List<Atom> atoms = atomRepo.findAllByAggregateState(aggregateState);
+        return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
+    }
+
+    public List<AtomDTO> findAllByAppearance(Appearance appearance) {
+        List<Atom> atoms = atomRepo.findAllByAppearance(appearance);
+        return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
+    }
+
+    public List<AtomDTO> findAllByGroup(Group group) {
+        List<Atom> atoms = atomRepo.findAllByGroup(group);
+        return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
+    }
+
+    public List<AtomDTO> findAllByPeriod(long period) {
+        List<Atom> atoms = atomRepo.findAllByPeriod(period);
+        return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
+    }
+
+    public List<Long> getAtomShells(long atomicNumber) {
+        return getAtomShells(atomRepo.findById(atomicNumber));
+    }
+
+    public List<Long> getAtomShells(String symbol) {
+        return getAtomShells(atomRepo.findBySymbol(symbol));
+    }
+
+    private List<Long> getAtomShells(Atom atom) {
+        long atomicNumber = atom.getId();
+        List<Long> shells = new ArrayList<>();
+
+        long n = 1;
         while (atomicNumber > 0) {
-            int maxElectrons = 2 * (n * n);
+            long maxElectrons = 2 * (n * n);
 
             if (atomicNumber < maxElectrons) {
                 maxElectrons = atomicNumber;
@@ -94,11 +133,11 @@ public class AtomService {
         return shells;
     }
 
-    public int getValenceShellElectronCount(long atomicNumber) {
-        return getAtomShells(findByAtomicNumber(atomicNumber)).getLast();
+    public long getValenceShellElectronCount(long atomicNumber) {
+        return getAtomShells(atomRepo.findById(atomicNumber)).getLast();
     }
 
-    public int getValenceShellElectronCount(String symbol) {
-        return getAtomShells(findBySymbol(symbol)).getLast();
+    public long getValenceShellElectronCount(String symbol) {
+        return getAtomShells(atomRepo.findBySymbol(symbol)).getLast();
     }
 }

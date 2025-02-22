@@ -1,7 +1,12 @@
 package de.seniorenheim.nlbackend.chemistry.database.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(name = "chemistry_atoms")
@@ -12,7 +17,7 @@ import lombok.*;
 public class Atom {
 
     @Id
-    private long atomicNumber;
+    private long id;
     private String name;
     private String symbol;
     private double atomicMass;
@@ -29,4 +34,7 @@ public class Atom {
     @JoinColumn
     private Group group;
     private long period;
+
+    @OneToMany(mappedBy = "atom")
+    private List<MoleculeAtomContainment> moleculeAtomContainments;
 }

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MoleculeRepo extends JpaRepository<Molecule, Long> {
 
+    public Molecule findById(long id);
     public Molecule findByName(String name);
-    public Molecule findByChemicalFormula(String chemicalFormula);
 }

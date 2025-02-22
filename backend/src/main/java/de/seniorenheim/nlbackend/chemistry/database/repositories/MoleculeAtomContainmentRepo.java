@@ -12,9 +12,11 @@ import java.util.List;
 @Repository
 public interface MoleculeAtomContainmentRepo extends JpaRepository<MoleculeAtomContainment, Long> {
 
-    public List<MoleculeAtomContainment> findByAtom(Atom atom);
-    public List<MoleculeAtomContainment> findByMolecule(Molecule molecule);
+    MoleculeAtomContainment findById(long id);
+
+    @Query(value = "FROM MoleculeAtomContainment m WHERE m.atom = ?1 ORDER BY m.molecule.name")
+    List<MoleculeAtomContainment> findByAtomOrderByMoleculeASC(Atom atom);
 
     @Query(value = "FROM MoleculeAtomContainment m WHERE m.molecule = ?1 ORDER BY m.atom.symbol")
-    public List<MoleculeAtomContainment> findByMoleculeOrderedByAtomSymbolASC(Molecule molecule);
+    List<MoleculeAtomContainment> findByMoleculeOrderedByAtomSymbolASC(Molecule molecule);
 }

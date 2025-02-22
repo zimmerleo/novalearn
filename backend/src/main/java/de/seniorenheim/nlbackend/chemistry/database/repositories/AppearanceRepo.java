@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppearanceRepo extends JpaRepository<Appearance, Long> {
+    Appearance findById(long id);
+    Appearance findByName(String name);
 }

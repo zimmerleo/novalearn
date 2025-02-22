@@ -2,29 +2,48 @@ POST localhost:8080/api/v1/atoms
 Content-Type: application/json
 
 {
-    "atomicNumber": 6,
-    "name": "Carbon",
-    "symbol": "C",
-    "atomicMass": 12.011,
-    "aggregateState": {
-      "name": "Solid"
-    },
-    "appearance": {
-      "name": "Natural"
-    },
-    "group": {
-      "name": "Tetrels",
-      "mainGroup": true
-    },
-    "period": 2
-  }
+  "id": 11,
+  "name": "Sodium",
+  "symbol": "Na",
+  "atomicMass": 22.990,
+  "aggregateState": {
+    "id": 1,
+    "name": "Solid"
+  },
+  "appearance": {
+    "id": 1,
+    "name": "Natural"
+  },
+  "group": {
+    "id": 1,
+    "name": "Alkali metals",
+    "mainGroup": true
+  },
+  "period": 3
+}
 ###
-POST localhost:8080/api/v1/molecules
+PUT localhost:8080/api/v1/atoms/id/11
 Content-Type: application/json
 
 {
-  "name": "Water",
-  "atoms": {
-
-  }
+  "id": 11,
+  "name": "Sodiu",
+  "symbol": "Na",
+  "atomicMass": 22.990,
+  "aggregateState": {
+    "id": 1,
+    "name": "Solid"
+  },
+  "appearance": {
+    "id": 1,
+    "name": "Natural"
+  },
+  "group": {
+    "id": 1,
+    "name": "Alkali metals",
+    "mainGroup": true
+  },
+  "period": 3
 }
+###
+DELETE localhost:8080/api/v1/atoms/id/11
