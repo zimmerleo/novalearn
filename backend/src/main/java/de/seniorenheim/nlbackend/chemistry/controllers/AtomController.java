@@ -1,7 +1,6 @@
 package de.seniorenheim.nlbackend.chemistry.controllers;
 
 import de.seniorenheim.nlbackend.chemistry.database.dtos.AtomDTO;
-import de.seniorenheim.nlbackend.chemistry.database.dtos.MoleculeDTO;
 import de.seniorenheim.nlbackend.chemistry.services.AtomService;
 import de.seniorenheim.nlbackend.chemistry.services.MoleculeAtomContainmentService;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +22,28 @@ public class AtomController {
     }
 
     @GetMapping
-    public List<AtomDTO> getAtoms() {
+    public List<AtomDTO> findAtoms() {
         return atomService.findAll();
+    }
+    
+    @GetMapping("/aggregatestate/{id}")
+    public List<AtomDTO> findAtomsByAggregateStateId(@PathVariable long id) {
+        return atomService.findAllByAggregateStateId(id);
+    }
+
+    @GetMapping("/appearance/{id}")
+    public List<AtomDTO> findAtomsByAppearanceId(@PathVariable long id) {
+        return atomService.findAllByAppearanceId(id);
+    }
+
+    @GetMapping("/group/{id}")
+    public List<AtomDTO> findAtomsByGroupId(@PathVariable long id) {
+        return atomService.findAllByGroupId(id);
+    }
+
+    @GetMapping("/period/{id}")
+    public List<AtomDTO> findAtomsByPeriod(@PathVariable long id) {
+        return atomService.findAllByPeriod(id);
     }
 
     @PostMapping
@@ -43,12 +62,12 @@ public class AtomController {
     }
 
     @GetMapping("/id/{id}")
-    public AtomDTO getAtomById(@PathVariable long id) {
+    public AtomDTO findAtomById(@PathVariable long id) {
         return atomService.findById(id);
     }
 
     @GetMapping("/symbol/{symbol}")
-    public AtomDTO getAtomBySymbol(@PathVariable String symbol) {
+    public AtomDTO findAtomBySymbol(@PathVariable String symbol) {
         return atomService.findBySymbol(symbol);
     }
 
@@ -73,7 +92,7 @@ public class AtomController {
     }
 
     @GetMapping("/id/{id}/molecules")
-    public Map<String, Integer> getMoleculesByAtomId(@PathVariable long id) {
+    public Map<String, Integer> findMoleculesByAtomId(@PathVariable long id) {
         return moleculeAtomContainmentService.findByAtomOrderByMoleculeASC(id);
     }
 }

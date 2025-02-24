@@ -1,9 +1,6 @@
 package de.seniorenheim.nlbackend.chemistry.database.repositories;
 
-import de.seniorenheim.nlbackend.chemistry.database.entities.AggregateState;
-import de.seniorenheim.nlbackend.chemistry.database.entities.Appearance;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Atom;
-import de.seniorenheim.nlbackend.chemistry.database.entities.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +12,9 @@ public interface AtomRepo extends JpaRepository<Atom, Long> {
     Atom findById(long id);
     Atom findByName(String name);
     Atom findBySymbol(String symbol);
-    List<Atom> findAllByAggregateState(AggregateState aggregateState);
-    List<Atom> findAllByAppearance(Appearance appearance);
-    List<Atom> findAllByGroup(Group group);
+
+    List<Atom> findAllByAggregateState_Id(long aggregateStateId);
+    List<Atom> findAllByAppearance_Id(long id);
+    List<Atom> findAllByGroup_Id(long id);
     List<Atom> findAllByPeriod(long period);
 }

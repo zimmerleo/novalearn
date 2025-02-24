@@ -1,10 +1,7 @@
 package de.seniorenheim.nlbackend.chemistry.services;
 
 import de.seniorenheim.nlbackend.chemistry.database.dtos.AtomDTO;
-import de.seniorenheim.nlbackend.chemistry.database.entities.AggregateState;
-import de.seniorenheim.nlbackend.chemistry.database.entities.Appearance;
 import de.seniorenheim.nlbackend.chemistry.database.entities.Atom;
-import de.seniorenheim.nlbackend.chemistry.database.entities.Group;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.AggregateStateRepo;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.AppearanceRepo;
 import de.seniorenheim.nlbackend.chemistry.database.repositories.AtomRepo;
@@ -86,18 +83,18 @@ public class AtomService {
         return dtoConverter.convertToDTO(atomRepo.findBySymbol(symbol));
     }
 
-    public List<AtomDTO> findAllByAggregateState(AggregateState aggregateState) {
-        List<Atom> atoms = atomRepo.findAllByAggregateState(aggregateState);
+    public List<AtomDTO> findAllByAggregateStateId(long id) {
+        List<Atom> atoms = atomRepo.findAllByAggregateState_Id(id);
         return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
     }
 
-    public List<AtomDTO> findAllByAppearance(Appearance appearance) {
-        List<Atom> atoms = atomRepo.findAllByAppearance(appearance);
+    public List<AtomDTO> findAllByAppearanceId(long id) {
+        List<Atom> atoms = atomRepo.findAllByAppearance_Id(id);
         return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
     }
 
-    public List<AtomDTO> findAllByGroup(Group group) {
-        List<Atom> atoms = atomRepo.findAllByGroup(group);
+    public List<AtomDTO> findAllByGroupId(long id) {
+        List<Atom> atoms = atomRepo.findAllByGroup_Id(id);
         return dtoConverter.convertList(atoms, dtoConverter::convertToDTO);
     }
 

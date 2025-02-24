@@ -32,6 +32,7 @@ public class MoleculeService {
         this.moleculeAtomContainmentRepo = moleculeAtomContainmentRepo;
     }
 
+    @Transactional
     public MoleculeDTO save(MoleculeDTO moleculeDTO) {
         Molecule molecule = Molecule.builder()
                 .name(moleculeDTO.getName())
